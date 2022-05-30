@@ -1,4 +1,4 @@
-## Interior mutability			
+# Interior mutability			
 Interior mutability is the property for which if you have shared references to a wrapper type (eg. &Cell<T>) you can still mutate the value contained in the wrapper (T). It’s useful when you need to introduce mutability inside of something immutable or when you need a mutable part of a data structure, but still logically present the structure as immutable. In other words, we can have an immutable value or multiple immutable references to a value, but still mutate its content. Mutation is performed in controlled and safe ways, depending on the wrapper type.
 
 ### `Cell<T>`
@@ -46,7 +46,7 @@ The internal data can be accessed via the lock method, which returns a MutexGuar
 
 
 
-## Shared Ownership
+# Shared Ownership
 
 Shared ownership in Rust allows a value to "simulate" to be owned by multiple variables bindings. First, having a shared ownership of a value could simplify the implementation of several data structures and algorithms (think of a graph structure). Second, shared ownership helps to extend the lifetime of values until needed. As an example, when it's needed to pass a &T to another thread, the T value could be dropped before the other thread ends using the reference &T. To overcome this issue, the value T could be owned in a shared way (in some smart pointer), with each owner sent to a different thread. As a result, the value will continue to leave until all threads drop those pointers. These smart pointers enforce memory safety by only giving out shared references to the value they wrap, and these as usual don’t allow direct mutation.
 
