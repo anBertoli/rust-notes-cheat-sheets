@@ -18,7 +18,7 @@ Interior mutability is the property for which if you have shared references to a
 
 ### `Cell<T>`
 
-Interior mutability for Copy types via copies. Setting a value means putting inside the Cell a copy of the value to set. Getting a value means obtaining a copy of the wrapped value. You can never obtain a pointer to the value inside the Cell.
+Interior mutability for Copy types via **copies**. Setting a value means putting inside the Cell a copy of the value to set. Getting a value means obtaining a copy of the wrapped value. You can never obtain a pointer to the value inside the Cell.
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
@@ -30,9 +30,9 @@ Interior mutability for Copy types via copies. Setting a value means putting ins
 
 ### `RefCell<T>`
 
-Interior mutability for all types via references to the inner value. RefCell allows you to borrow the wrapped value either mutably or immutably. Dynamic run-time borrowing ensures no more than one mutable borrow or mixed borrows occur at the same time (mixed = both & and &mut at the same time).
+Interior mutability for all types via **references** to the inner value. RefCell allows you to borrow the wrapped value either mutably or immutably. Dynamic run-time borrowing ensures no more than one mutable borrow or mixed borrows occur at the same time (mixed = both & and &mut at the same time).
 
-When the inner value is borrowed, a Ref or RefMut is returned, which can be used as a reference to the inner value. When this object is dropped, the internal borrowing bookeeping is reverted accordingly. These syntethic references point to the original RefCell, so the RefCell cannot be moved/dropped until all these refs are dropped.
+When the inner value is borrowed, a `Ref` or `RefMut` is returned, which can be used as a reference to the inner value. When this object is dropped, the internal borrowing bookeeping is reverted accordingly. These syntethic references point to the original RefCell, so the RefCell cannot be moved/dropped until all these refs are dropped.
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
@@ -44,7 +44,7 @@ When the inner value is borrowed, a Ref or RefMut is returned, which can be used
 
 ### `Mutex<T>`
 
-A mutual exclusion primitive useful to protect data shared across threads. The Mutex provides interior mutability via references in a thread safe way, since the access to the inner value is properly synchronized. We can compare Mutex to RefCell because both provide a similar dynamic run-time borrowing, but Mutex blocks the thread waiting for the lock instead of panicking.
+A mutual exclusion primitive useful to protect data shared across threads. The Mutex provides interior mutability via **references** in a thread safe way, since the access to the inner value is properly synchronized. We can compare Mutex to RefCell because both provide a similar dynamic run-time borrowing, but Mutex blocks the thread waiting for the lock instead of panicking.
 
 The internal data can be accessed via the lock method, which returns a MutexGuard. This guard can be treated like a pointer to the inner value. Holding a guard is a proof that the inner data is being accessed only by the (unique) holder of the guard. When the guard is dropped, other lock() calls can access the inner value. MutexGuards has a lifetime >= of the original Mutex, so the mutex cannot be moved/dropped until all guards are dropped.
 
@@ -66,7 +66,7 @@ Shared ownership in Rust allows a value to "simulate" to be owned by multiple va
 
 ### `Rc<T>`
 
-Smart pointer that provides single-threaded shared ownership via reference counting. Rc<T> provides shared ownership of a value of type T, allocated in the heap when included in the smart pointer. Rc can be cloned to produce a new pointer to the very same allocation. When the last Rc pointer to a given value is dropped, the inner value is also dropped.
+Smart pointer that provides **single-threaded shared ownership** via reference counting. Rc<T> provides shared ownership of a value of type T, allocated in the heap when included in the smart pointer. Rc can be cloned to produce a new pointer to the very same allocation. When the last Rc pointer to a given value is dropped, the inner value is also dropped.
 
 Shared references in Rust disallow mutation by default, and Rc is no exception: you cannot generally obtain a mutable reference to something inside an Rc. If you need mutability, put a Cell or RefCell inside the Rc.
 
@@ -80,7 +80,7 @@ Shared references in Rust disallow mutation by default, and Rc is no exception: 
 
 ### `Arc<T>`
 
-Smart pointer that provides multi-threaded shared ownership via reference counting, with atomic updates. Arc<T>is the thread safe equivalent of Rc<T>. Arc can be cloned to produce a new pointer to the same allocation in the heap. When the last Arc pointer to a given allocation is destroyed, the inner value is also dropped. Similarly to Rc, you cannot obtain a mutable reference to something inside an Arc.
+Smart pointer that provides **multi-threaded shared ownership** via reference counting, with atomic updates. Arc<T>is the thread safe equivalent of Rc<T>. Arc can be cloned to produce a new pointer to the same allocation in the heap. When the last Arc pointer to a given allocation is destroyed, the inner value is also dropped. Similarly to Rc, you cannot obtain a mutable reference to something inside an Arc.
 
 Arc<T> makes it thread safe to have multiple ownership of the same data, but it doesn’t add thread safety to the data itself. Arc<T> is thread safe as long as the inner value is thread safe (see safety notes).
 
@@ -109,4 +109,4 @@ The Sync marker trait indicates that it is safe for types implementing Sync to b
 
 Sharing shared references (&T) safely means that the references can be used without any problem from multiple threads. The actual meaning of "can be used without any problem" depends on every single case. For example &u32 is safe to be shared between thread boundaries, but that's not true for RefCell. If we have multiple &RefCell across threads, they could lead to desynchronized borrow.
 
-You can think of `Sync` as "Shared access is thread-safe".
+You can think of **`Sync`** as "Shared access is thread-safe".
