@@ -95,7 +95,7 @@ Arc<T> makes it thread safe to have multiple ownership of the same data, but it 
 
 
 # Thread Safety
-Rust enforces thread safety via marker traits: Send and Sync. These traits are defined as markers because they don't have methods or associated items. Instead they are like "flags" to signal to the compiler some properties about the implementors. Send and Sync are automatically implemented when the compiler determines that it’s appropriate OR they can manually be implemented using unsafe. Talking about the automatic implementation of these traits, if a type is composed entirely of Send or Sync types, then it is Send or Sync. Almost all primitive types are Send and Sync, with some important exceptions.
+Rust enforces thread safety via marker traits: `Send` and `Sync`. These traits are defined as markers because they don't have methods or associated items. Instead they are like "flags" to signal to the compiler some properties about the implementors. `Send` and `Sync` are automatically implemented when the compiler determines that it’s appropriate OR they can manually be implemented using unsafe. Talking about the automatic implementation of these traits, if a type is composed entirely of `Send` or `Sync` types, then it is `Send` or `Sync`. Almost all primitive types implement these traits, with some exceptions.
 
 ### `Send` trait
 The Send marker trait indicates that ownership of values of types implementing Send can be transferred between threads. The vast majority of Rust's type are Send, with some exceptions. In other words a type is Send if it is safe to send it to another thread, which means more threads can use the value at different times.
