@@ -1,4 +1,4 @@
-# Interior mutability			
+## Interior mutability			
 Interior mutability is the property for which if you have shared references to a wrapper type (eg. &Cell<T>) you can still mutate the value contained in the wrapper (T). It’s useful when you need to introduce mutability inside of something immutable or when you need a mutable part of a data structure, but still logically present the structure as immutable. In other words, we can have an immutable value or multiple immutable references to a value, but still mutate its content. Mutation is performed in controlled and safe ways, depending on the wrapper type.
 
 ### `Cell<T>`
@@ -40,13 +40,19 @@ The internal data can be accessed via the lock method, which returns a MutexGuar
 #### Safety Notes
 <p>1) Returned guards are checked via dynamic borrowing. There is no way we can obtain more than one guard at the same moment. 2) Mutex is Send + Sync only if the internal T is Send: if T is Send there's no problem in moving the Mutex and using it at different times (because T is itself Send and can be used in different threads at different times safely). If T is not Send, T could end up being used in different threads, invalidating the Send safety limit imposed on them. 3) Sync on T is not influent: the data is accessed from one thread at a time in any case.</p>
 
+### Summary table
+
+| Type | Provides | Accessors | Panics| Send | Sync |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| `Cell<T>` | Values (copies) | `.get()` <br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
+| `RefCell<T>` | References (&/&mut) | `.borrow()` `.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()` `.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
+| `Mutex<T>` | References (&/&mut) | `.lock()` `.borrow_mut()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()` `.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock is freed | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
 
 
 
 
 
-
-# Shared Ownership
+## Shared Ownership
 
 Shared ownership in Rust allows a value to "simulate" to be owned by multiple variables bindings. First, having a shared ownership of a value could simplify the implementation of several data structures and algorithms (think of a graph structure). Second, shared ownership helps to extend the lifetime of values until needed. As an example, when it's needed to pass a &T to another thread, the T value could be dropped before the other thread ends using the reference &T. To overcome this issue, the value T could be owned in a shared way (in some smart pointer), with each owner sent to a different thread. As a result, the value will continue to leave until all threads drop those pointers. These smart pointers enforce memory safety by only giving out shared references to the value they wrap, and these as usual don’t allow direct mutation.
 
