@@ -80,10 +80,11 @@ Arc<T> makes it thread safe to have multiple ownership of the same data, but it 
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
+| **Interior Mutability Types** |
 | `Cell<T>` | Values (copies) | `.get()` <br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 | `RefCell<T>` | References (&/&mut) | `.borrow()` `.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()` `.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 | `Mutex<T>` | References (&/&mut) | `.lock()` `.borrow_mut()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()` `.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock is freed | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
-||||||||
+| **Shared Ownership Types** |
 | `Rc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | 🚫 | 🚫 |
 | `Arc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | ✅<br><sub>(if T is Send + Sync)</sub> | ✅<br><sub>(if T is Send + Sync)</sub> |
 
