@@ -25,3 +25,21 @@ When the inner value is borrowed, a Ref or RefMut is returned, which can be used
 
 #### Safety Notes
 <p>1) Returned references (Ref/RefMut) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) RefCell is not Sync (no &RefCell can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) RefCell is Send if T is Send: if T is Send there's no problem in moving the RefCell and using it at different times. If T is not Send and RefCell was Send nonetheless, T could end up being used in different threads, invalidating the Send safety limit imposed on them.</p>
+
+
+### `Mutex<T>`
+
+A mutual exclusion primitive useful to protect data shared across threads. The Mutex provides interior mutability via references in a thread safe way, since the access to the inner value is properly synchronized. We can compare Mutex to RefCell because both provide a similar dynamic run-time borrowing, but Mutex blocks the thread waiting for the lock instead of panicking.
+
+The internal data can be accessed via the lock method, which returns a MutexGuard. This guard can be treated like a pointer to the inner value. Holding a guard is a proof that the inner data is being accessed only by the (unique) holder of the guard. When the guard is dropped, other lock() calls can access the inner value. MutexGuards has a lifetime >= of the original Mutex, so the mutex cannot be moved/dropped until all guards are dropped.
+
+| Type | Provides | Accessors | Panics| Send | Sync |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| `Mutex<T>` | References (&/&mut) | `.lock()` `.borrow_mut()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()` `.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock is freed | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
+
+#### Safety Notes
+<p>1) Returned guards are checked via dynamic borrowing. There is no way we can obtain more than one guard at the same moment. 2) Mutex is Send + Sync only if the internal T is Send: if T is Send there's no problem in moving the Mutex and using it at different times (because T is itself Send and can be used in different threads at different times safely). If T is not Send, T could end up being used in different threads, invalidating the Send safety limit imposed on them. 3) Sync on T is not influent: the data is accessed from one thread at a time in any case.</p>
+
+
+
+
