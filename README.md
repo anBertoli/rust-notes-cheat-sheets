@@ -8,7 +8,7 @@ Interior mutability for Copy types via copies. Setting a value means putting ins
 
 | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|
-| Values (copies) | `.get()` `.set()` <br><span style="font-size: 12px;">to get/set a copy</span> | Never | ✅<br><span style="font-size: 12px;">(if T is Send)</span> | 🚫 |
+| Values (copies) | `.get()` `.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
 1) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 
