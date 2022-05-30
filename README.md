@@ -43,3 +43,39 @@ The internal data can be accessed via the lock method, which returns a MutexGuar
 
 
 
+
+
+
+## Shared Ownership
+
+Shared ownership in Rust allows a value to "simulate" to be owned by multiple variables bindings. First, having a shared ownership of a value could simplify the implementation of several data structures and algorithms (think of a graph structure). Second, shared ownership helps to extend the lifetime of values until needed. As an example, when it's needed to pass a &T to another thread, the T value could be dropped before the other thread ends using the reference &T. To overcome this issue, the value T could be owned in a shared way (in some smart pointer), with each owner sent to a different thread. As a result, the value will continue to leave until all threads drop those pointers. These smart pointers enforce memory safety by only giving out shared references to the value they wrap, and these as usual don’t allow direct mutation.
+
+### `Rc<T>`
+
+Smart pointer that provides single-threaded shared ownership via reference counting. Rc<T> provides shared ownership of a value of type T, allocated in the heap when included in the smart pointer. Rc can be cloned to produce a new pointer to the very same allocation. When the last Rc pointer to a given value is dropped, the inner value is also dropped.
+
+Shared references in Rust disallow mutation by default, and Rc is no exception: you cannot generally obtain a mutable reference to something inside an Rc. If you need mutability, put a Cell or RefCell inside the Rc.
+
+| Type | Provides | Accessors | Panics| Send | Sync |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| `Rc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | 🚫 | 🚫 |
+
+#### Safety Notes
+<p>1) Only shared/immutable refs can be obtained and so there is no risk of mutation while aliasing the inner value. 2) Not Send: the inner reference count is not synchronized/updated atomicly. If Rc was Send, cloned Rc sent to other threads (pointing to the same data) would mess up the internal bookeeping (during further cloning). 3) Not Sync for the very same reason. Immutable refs to Rc (&Rc) could be used to obtain clones, which could lead to desynchronized mutation of the internal data.</p>
+
+
+### `Arc<T>`
+
+Smart pointer that provides multi-threaded shared ownership via reference counting, with atomic updates. Arc<T>is the thread safe equivalent of Rc<T>. Arc can be cloned to produce a new pointer to the same allocation in the heap. When the last Arc pointer to a given allocation is destroyed, the inner value is also dropped. Similarly to Rc, you cannot obtain a mutable reference to something inside an Arc.
+
+Arc<T> makes it thread safe to have multiple ownership of the same data, but it doesn’t add thread safety to the data itself. Arc<T> is thread safe as long as the inner value is thread safe (see safety notes).
+
+| Type | Provides | Accessors | Panics| Send | Sync |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| `Arc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | ✅<br><sub>(if T is Send + Sync)</sub> | ✅<br><sub>(if T is Send + Sync)</sub> |
+
+#### Safety Notes
+<p>1) Only shared/immutable refs can be obtained and so there is no risk of mutation while aliasing the inner value. 2) Send and Sync if T is Send and Sync: if T satisfies these requisites there is no problem in using the T value in different threads at the same time. 2a) If T is not Send and Arc was Send nonetheless, T could end up being used in different threads (since Arc can be cloned and sent to other threads), invalidating the Send safety limit imposed on the T type. In this case Arc clearly cannot be Send nor Sync. 2b) If T is not Sync T cannot be used in different threads at the same moment. If Arc was always Send or Sync, Arc clones could lead to usage of T in different threads. This is not safe since we would violate the Sync limit on T.</p>
+
+
+
