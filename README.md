@@ -40,7 +40,7 @@ The internal data can be accessed via the lock method, which returns a MutexGuar
 #### Safety Notes
 <p>1) Returned guards are checked via dynamic borrowing. There is no way we can obtain more than one guard at the same moment. 2) Mutex is Send + Sync only if the internal T is Send: if T is Send there's no problem in moving the Mutex and using it at different times (because T is itself Send and can be used in different threads at different times safely). If T is not Send, T could end up being used in different threads, invalidating the Send safety limit imposed on them. 3) Sync on T is not influent: the data is accessed from one thread at a time in any case.</p>
 
-### Summary table
+## Summary table
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
@@ -82,6 +82,8 @@ Arc<T> makes it thread safe to have multiple ownership of the same data, but it 
 
 #### Safety Notes
 <p>1) Only shared/immutable refs can be obtained and so there is no risk of mutation while aliasing the inner value. 2) Send and Sync if T is Send and Sync: if T satisfies these requisites there is no problem in using the T value in different threads at the same time. 2a) If T is not Send and Arc was Send nonetheless, T could end up being used in different threads (since Arc can be cloned and sent to other threads), invalidating the Send safety limit imposed on the T type. In this case Arc clearly cannot be Send nor Sync. 2b) If T is not Sync T cannot be used in different threads at the same moment. If Arc was always Send or Sync, Arc clones could lead to usage of T in different threads. This is not safe since we would violate the Sync limit on T.</p>
+
+## Summary table
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
