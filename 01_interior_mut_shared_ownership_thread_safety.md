@@ -97,14 +97,14 @@ Arc<T> makes it thread safe to have multiple ownership of the same data, but it 
 # Thread Safety
 Rust enforces thread safety via marker traits: Send and Sync. These traits are defined as markers because they don't have methods or associated items. Instead they are like "flags" to signal to the compiler some properties about the implementors. Send and Sync are automatically implemented when the compiler determines that it’s appropriate OR they can manually be implemented using unsafe. Talking about the automatic implementation of these traits, if a type is composed entirely of Send or Sync types, then it is Send or Sync. Almost all primitive types are Send and Sync, with some important exceptions.
 
-### `Send`
+### `Send` trait
 The Send marker trait indicates that ownership of values of types implementing Send can be transferred between threads. The vast majority of Rust's type are Send, with some exceptions. In other words a type is Send if it is safe to send it to another thread, which means more threads can use the value at different times.
 
 Note that Send types still follow the usual borrowing rules, e.g. if some references to a value exist, the value itself cannot be dropped or moved (e.g. to another thread).
 
 You can think of `Send` as "Exclusive access is thread-safe".
 
-### `Sync`
+### `Sync` trait
 The Sync marker trait indicates that it is safe for types implementing Sync to be referenced from multiple threads. In other words, any type T is Sync if &T (an immutable reference) is Send, meaning the reference can be moved to another thread.
 
 Sharing shared references (&T) safely means that the references can be used without any problem from multiple threads. The actual meaning of "can be used without any problem" depends on every single case. For example &u32 is safe to be shared between thread boundaries, but that's not true for RefCell. If we have multiple &RefCell across threads, they could lead to desynchronized borrow.
