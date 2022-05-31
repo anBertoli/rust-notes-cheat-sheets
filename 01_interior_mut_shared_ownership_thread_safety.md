@@ -5,7 +5,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | `Cell<T>` | Values (copies) | `.get()`<br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 | `RefCell<T>` | References (&/&mut) | `.borrow()`<br>`.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more <br>than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
-| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock<br> is freed (unless poisoned, see notes) | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
+| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the<br> lock is freed (unless poisoned,<br> see notes) | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
 
 #### Shared Ownership Types
 | Type | Provides | Accessors | Panics| Send | Sync |
