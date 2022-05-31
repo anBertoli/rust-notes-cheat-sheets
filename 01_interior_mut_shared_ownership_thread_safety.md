@@ -25,7 +25,7 @@ Interior mutability for _Copy_ types via **copies**. Setting a value means putti
 | `Cell<T>` | Values (copies) | `.get()`<br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
-1) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 2) `Cell` is not _Sync_ (no `&Cell` can be shared between threads) because getting/setting the value is not synchronized. 3) `Cell` is _Send_ if `T` is _Send_: if `T` is Send there's no problem in moving the `Cell` and using it at different times. If `T` is not Send and `Cell` was nonetheless Send, `T` could end up being used in different threads, invalidating the Send safety limit imposed on it.
+1\) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 2) `Cell` is not _Sync_ (no `&Cell` can be shared between threads) because getting/setting the value is not synchronized. 3) `Cell` is _Send_ if `T` is _Send_: if `T` is Send there's no problem in moving the `Cell` and using it at different times. If `T` is not Send and `Cell` was nonetheless Send, `T` could end up being used in different threads, invalidating the Send safety limit imposed on it.
 
 
 ### `RefCell<T>`
