@@ -14,7 +14,6 @@
 | `Arc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | ✅<br><sub>(if T is Send + Sync)</sub> | ✅<br><sub>(if T is Send + Sync)</sub> |
 
 <br>
-<br>
 
 ## Interior mutability			
 Interior mutability is the property for which if you have an immutable value or shared references to a wrapper type 
