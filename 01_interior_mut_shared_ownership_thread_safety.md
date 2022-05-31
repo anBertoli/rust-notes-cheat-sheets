@@ -18,14 +18,14 @@ Interior mutability is the property for which if you have an immutable value or 
 
 ### `Cell<T>`
 
-Interior mutability for Copy types via **copies**. Setting a value means putting inside the Cell a copy of the value to set. Getting a value means obtaining a copy of the wrapped value. You can never obtain a pointer to the value inside the Cell.
+Interior mutability for _Copy_ types via **copies**. Setting a value means putting inside the `Cell` a copy of the value to set. Getting a value means obtaining a copy of the wrapped value. You can never obtain a pointer to the value inside the `Cell`.
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | `Cell<T>` | Values (copies) | `.get()`<br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
-<p>1) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 2) Cell is not Sync (no &Cell can be shared between threads) because getting/setting the value is not synchronized. 3) Cell is Send if T is Send: if T is Send there's no problem in moving the Cell and using it at different times. If T is not Send and Cell was nonetheless Send, T could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
+<p>1) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 2) `Cell` is not _Sync_ (no `&Cell` can be shared between threads) because getting/setting the value is not synchronized. 3) `Cell` is _Send_ if `T` is _Send_: if `T` is Send there's no problem in moving the `Cell` and using it at different times. If `T` is not Send and `Cell` was nonetheless Send, `T` could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
 
 
 ### `RefCell<T>`
