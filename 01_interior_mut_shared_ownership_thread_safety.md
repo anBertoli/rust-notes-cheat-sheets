@@ -25,7 +25,7 @@ Interior mutability for Copy types via **copies**. Setting a value means putting
 | `Cell<T>` | Values (copies) | `.get()`<br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
-<p>1) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 2) Cell is not Sync (no &Cell can be shared between threads) because getting/setting the value is not synchronized. 3) Cell is Send if T is Send: if T is Send there's no problem in moving the Cell and using it at different times. If T is not Send and Cell was Send nonetheless, T could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
+<p>1) No references to the inner value can be obtained. There's no risk to mutate the value while someone is holding a pointer to the inner value. 2) Cell is not Sync (no &Cell can be shared between threads) because getting/setting the value is not synchronized. 3) Cell is Send if T is Send: if T is Send there's no problem in moving the Cell and using it at different times. If T is not Send and Cell was nonetheless Send, T could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
 
 
 ### `RefCell<T>`
@@ -39,7 +39,7 @@ When the inner value is borrowed, a `Ref` or `RefMut` is returned, which can be 
 | `RefCell<T>` | References (&/&mut) | `.borrow()`<br>`.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more <br>than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
-<p>1) Returned references (Ref/RefMut) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) RefCell is not Sync (no &RefCell can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) RefCell is Send if T is Send: if T is Send there's no problem in moving the RefCell and using it at different times. If T is not Send and RefCell was Send nonetheless, T could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
+<p>1) Returned references (Ref/RefMut) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) RefCell is not Sync (no &RefCell can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) RefCell is Send if T is Send: if T is Send there's no problem in moving the RefCell and using it at different times. If T is not Send and RefCell was nonetheless Send, T could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
 
 
 ### `Mutex<T>`
@@ -89,7 +89,7 @@ Arc<T> makes it thread safe to have multiple ownership of the same data, but it 
 | `Arc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | ✅<br><sub>(if T is Send + Sync)</sub> | ✅<br><sub>(if T is Send + Sync)</sub> |
 
 #### Safety Notes
-<p>1) Only shared/immutable refs can be obtained and so there is no risk of mutation while aliasing the inner value. 2) Send and Sync if T is Send and Sync: if T satisfies these requisites there is no problem in using the T value in different threads at the same time. 2a) If T is not Send and Arc was Send nonetheless, T could end up being used in different threads (since Arc can be cloned and sent to other threads), invalidating the Send safety limit imposed on the T type. In this case Arc clearly cannot be Send nor Sync. 2b) If T is not Sync T cannot be used in different threads at the same moment. If Arc was always Send or Sync, Arc clones could lead to usage of T in different threads. This is not safe since we would violate the Sync limit on T.</p>
+<p>1) Only shared/immutable refs can be obtained and so there is no risk of mutation while aliasing the inner value. 2) Send and Sync if T is Send and Sync: if T satisfies these requisites there is no problem in using the T value in different threads at the same time. 2a) If T is not Send and Arc was nonetheless Send, T could end up being used in different threads (since Arc can be cloned and sent to other threads), invalidating the Send safety limit imposed on the T type. In this case Arc clearly cannot be Send nor Sync. 2b) If T is not Sync T cannot be used in different threads at the same moment. If Arc was always Send or Sync, Arc clones could lead to usage of T in different threads. This is not safe since we would violate the Sync limit on T.</p>
 
 
 
