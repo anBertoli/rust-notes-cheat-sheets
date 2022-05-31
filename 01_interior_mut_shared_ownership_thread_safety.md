@@ -109,4 +109,4 @@ The Sync marker trait indicates that it is safe for types implementing Sync to b
 
 Sharing shared references (&T) safely means that the references can be used without any problem from multiple threads. The actual meaning of "can be used without any problem" depends on every single case. For example &u32 is safe to be shared between thread boundaries, but that's not true for RefCell. If we have multiple &RefCell across threads, they could lead to desynchronized borrow.
 
-You can think of **`Sync`** as "Shared access is thread-safe".
+You can think of `Sync` as "Shared access is thread-safe".
