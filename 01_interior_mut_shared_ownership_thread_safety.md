@@ -68,12 +68,12 @@ for the lock instead of panicking.
 
 The internal data can be accessed via the lock method, which returns a `MutexGuard`. This guard can be treated like a 
 pointer to the inner value. Holding a guard is a proof that the inner data is being accessed only by the (unique) holder
-of the guard. When the guard is dropped, other lock() calls can access the inner value. `MutexGuard`s have a lifetime >= 
+of the guard. When the guard is dropped, other lock() calls can access the inner value. `MutexGuard`s have a lifetime <= 
 of the original `Mutex`, so the mutex cannot be moved/dropped until all guards are dropped.
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until<br> the lock is freed | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
+| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock<br> is freed (unless poisoned, see notes) | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
 
 #### Safety Notes
 1\) Returned guards are checked via dynamic borrowing. There is no way we can obtain more than one guard at the same 
@@ -82,6 +82,9 @@ it at different times (because `T` is itself Send and can be used in different t
 `T` is not Send, `T` could end up being used in different threads, invalidating the Send safety limit imposed on it. 3) 
 Sync on `T` is not influent: the data is accessed from one thread at a time in any case.
 
+Poisoned state: a `Mutex` is considered poisoned whenever a thread panics while holding the mutex. Once a mutex is 
+poisoned, all other threads are unable to access the data by default. A poisoned mutex, however, does not prevent all 
+access to the underlying data, the guard can be obtained from the lock() error.
 
 
 ## Shared Ownership
