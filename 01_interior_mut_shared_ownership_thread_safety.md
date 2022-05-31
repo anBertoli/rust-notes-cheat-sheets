@@ -5,7 +5,7 @@
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | `Cell<T>` | Values (copies) | `.get()`<br>`.set()` <br><sub>to get/set a copy</sub> | Never | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 | `RefCell<T>` | References (&/&mut) | `.borrow()`<br>`.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more <br>than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
-| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until <br>the lock is freed | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
+| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock<br> is freed (unless poisoned, see notes) | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
 
 #### Shared Ownership Types
 | Type | Provides | Accessors | Panics| Send | Sync |
@@ -82,7 +82,7 @@ it at different times (because `T` is itself Send and can be used in different t
 `T` is not Send, `T` could end up being used in different threads, invalidating the Send safety limit imposed on it. 3) 
 Sync on `T` is not influent: the data is accessed from one thread at a time in any case.
 
-Poisoned state: a `Mutex` is considered poisoned whenever a thread panics while holding the mutex. Once a mutex is 
+_Poisoned_ state: a `Mutex` is considered poisoned whenever a thread panics while holding the mutex. Once a mutex is 
 poisoned, all other threads are unable to access the data by default. A poisoned mutex, however, does not prevent all 
 access to the underlying data, the guard can be obtained from the lock() error.
 
