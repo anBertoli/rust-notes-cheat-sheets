@@ -30,16 +30,16 @@ Interior mutability for _Copy_ types via **copies**. Setting a value means putti
 
 ### `RefCell<T>`
 
-Interior mutability for all types via **references** to the inner value. RefCell allows you to borrow the wrapped value either mutably or immutably. Dynamic run-time borrowing ensures no more than one mutable borrow or mixed borrows occur at the same time (mixed = both & and &mut at the same time).
+Interior mutability for all types via **references** to the inner value. `RefCell` allows you to borrow the wrapped value either mutably or immutably. _**Dynamic run-time borrowing**_ ensures no more than one mutable borrow or mixed borrows occur at the same time (mixed borrows = both & and &mut at the same time).
 
-When the inner value is borrowed, a `Ref` or `RefMut` is returned, which can be used as a reference to the inner value. When this object is dropped, the internal borrowing bookeeping is reverted accordingly. These syntethic references point to the original RefCell, so the RefCell cannot be moved/dropped until all these refs are dropped.
+When the inner value is borrowed, a `Ref` or `RefMut` is returned, which can be used as a reference to the inner value. When this object is dropped, the internal borrowing bookkeeping is reverted accordingly. These synthetic references point to the original `RefCell`, so the `RefCell` cannot be moved/dropped until all these refs are dropped.
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | `RefCell<T>` | References (&/&mut) | `.borrow()`<br>`.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more <br>than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
-<p>1) Returned references (Ref/RefMut) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) RefCell is not Sync (no &RefCell can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) RefCell is Send if T is Send: if T is Send there's no problem in moving the RefCell and using it at different times. If T is not Send and RefCell was nonetheless Send, T could end up being used in different threads, invalidating the Send safety limit imposed on it.</p>
+1\) Returned references (`Ref`/`RefMut`) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) `RefCell` is not _Sync_ (no `&RefCell` can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) `RefCell` is _Send_ if `T` is _Send_: if `T` is _Send_ there's no problem in moving the `RefCell` and using it at different times. If `T` is not _Send_ and `RefCell` was nonetheless _Send_, `T` could end up being used in different threads, invalidating the _Send_ safety limit imposed on it.
 
 
 ### `Mutex<T>`
