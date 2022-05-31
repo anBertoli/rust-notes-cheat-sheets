@@ -94,7 +94,7 @@ to a different thread. As a result, the value will continue to leave until all t
 pointers enforce memory safety by only giving out shared references to the value they wrap, and these as usual don’t 
 allow direct mutation.
 
-## `Rc<T>`
+### `Rc<T>`
 Smart pointer that provides **single-threaded shared ownership** via reference counting. `Rc<T>` provides shared ownership 
 of a value of type `T`, allocated in the heap when included in the smart pointer. `Rc` can be cloned to produce a new 
 pointer to the very same allocation. When the last `Rc` pointer to a given value is dropped, the inner value is also dropped.
