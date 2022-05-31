@@ -64,7 +64,7 @@ The internal data can be accessed via the lock method, which returns a MutexGuar
 
 Shared ownership in Rust allows a value to "simulate" to be owned by multiple variables bindings. First, having a shared ownership of a value could simplify the implementation of several data structures and algorithms (think of a graph structure). Second, shared ownership helps to extend the lifetime of values until needed. As an example, when it's needed to pass a &T to another thread, the T value could be dropped before the other thread ends using the reference &T. To overcome this issue, the value T could be owned in a shared way (in some smart pointer), with each owner sent to a different thread. As a result, the value will continue to leave until all threads drop those pointers. These smart pointers enforce memory safety by only giving out shared references to the value they wrap, and these as usual don’t allow direct mutation.
 
-### `Rc<T>`
+## `Rc<T>`
 
 Smart pointer that provides **single-threaded shared ownership** via reference counting. Rc<T> provides shared ownership of a value of type T, allocated in the heap when included in the smart pointer. Rc can be cloned to produce a new pointer to the very same allocation. When the last Rc pointer to a given value is dropped, the inner value is also dropped.
 
