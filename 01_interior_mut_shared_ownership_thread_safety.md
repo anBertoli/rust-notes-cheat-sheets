@@ -73,7 +73,7 @@ of the original `Mutex`, so the mutex cannot be moved/dropped until all guards a
 
 | Type | Provides | Accessors | Panics| Send | Sync |
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the lock<br> is freed (unless poisoned, see notes) | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
+| `Mutex<T>` | References (&/&mut) | `.lock()` <br><sub>to get the MutexGuard</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the MutexGuard</sub> | Never, blocks until the<br> lock is freed (unless <br>poisoned, see notes) | ✅<br><sub>(if T is Send)</sub> | ✅<br><sub>(if T is Send)</sub> |
 
 #### Safety Notes
 1\) Returned guards are checked via dynamic borrowing. There is no way we can obtain more than one guard at the same 
