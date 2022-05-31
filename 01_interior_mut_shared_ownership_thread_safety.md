@@ -14,7 +14,7 @@
 | `Arc<T>` | References (& only) | `.deref()` <br><sub>to get the &ref</sub> | Never | ✅<br><sub>(if T is Send + Sync)</sub> | ✅<br><sub>(if T is Send + Sync)</sub> |
 
 # Interior mutability			
-Interior mutability is the property for which if you have shared references to a wrapper type (eg. &Cell<T>) you can still mutate the value contained in the wrapper (T). It’s useful when you need to introduce mutability inside of something immutable or when you need a mutable part of a data structure, but still logically present the structure as immutable. In other words, we can have an immutable value or multiple immutable references to a value, but still mutate its content. Mutation is performed in controlled and safe ways, depending on the wrapper type.
+Interior mutability is the property for which if you have an immutable value or shared references to a wrapper type (eg. `&Cell<T>`) you can still mutate the value contained in the wrapper (`T`). It’s useful when you need to introduce mutability inside of something immutable or when you need a mutable part of a data structure, but still logically present the structure as immutable. In other words, we can have an immutable value or multiple immutable references to a value, but still mutate its content. Mutation is performed in controlled and safe ways, depending on the wrapper type.
 
 ### `Cell<T>`
 
