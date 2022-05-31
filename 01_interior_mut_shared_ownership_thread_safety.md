@@ -39,7 +39,7 @@ When the inner value is borrowed, a `Ref` or `RefMut` is returned, which can be 
 | `RefCell<T>` | References (&/&mut) | `.borrow()`<br>`.borrow_mut()` <br><sub>to get the Ref/RefMut</sub> <br><br> `.deref()`<br>`.deref_mut()`<br> <sub>on the Ref/RefMut</sub> | Mixed borrows or more <br>than one mutable borrow | ✅<br><sub>(if T is Send)</sub> | 🚫 |
 
 #### Safety Notes
-1\) Returned references (`Ref`/`RefMut`) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) `RefCell` is not _Sync_ (no `&RefCell` can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) `RefCell` is _Send_ if `T` is _Send_: if `T` is _Send_ there's no problem in moving the `RefCell` and using it at different times. If `T` is not _Send_ and `RefCell` was nonetheless _Send_, `T` could end up being used in different threads, invalidating the _Send_ safety limit imposed on it.
+1\) Returned references (`Ref`/`RefMut`) are checked via dynamic borrowing. There is no way we can obtain more than one exclusive ref or mixed refs to the inner value at the same moment. 2) `RefCell` is not _Sync_ (no `&RefCell` can be shared between threads) because updates of the internal borrowing state are not synchronized. 3) `RefCell` is _Send_ if T is _Send_: if T is _Send_ there's no problem in moving the `RefCell` and using it at different times. If T is not _Send_ and `RefCell` was nonetheless _Send_, T could end up being used in different threads, invalidating the _Send_ safety limit imposed on it.
 
 
 ### `Mutex<T>`
