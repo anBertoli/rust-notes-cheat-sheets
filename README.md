@@ -1,5 +1,5 @@
 # Rust Notes & Cheat Sheets
 
 ### Index
-1) Interior Mutability, Shared Ownership & Thread Safety ([markdown](./03_interior_mut_shared_ownership_thread_safety/README.md),
-  [pdf](./03_interior_mut_shared_ownership_thread_safety/03_interior_mut_shared_ownership_thread_safety.pdf)) 
+1) Interior Mutability, Shared Ownership & Thread Safety ([markdown](01_interior_mut_shared_ownership_thread_safety/README.md),
+  [pdf](01_interior_mut_shared_ownership_thread_safety/01_interior_mut_shared_ownership_thread_safety.pdf)) 
