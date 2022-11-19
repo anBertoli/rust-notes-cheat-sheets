@@ -107,3 +107,25 @@ to all output lifetime parameters: fn foo<'a>(x: &'a i32) -> &'a i32.
 - The third rule is that, if there are multiple input lifetime parameters, but one of them is &self or 
 &mut self because this is a method, the lifetime of self is assigned to all output lifetime parameters.
 This third rule makes methods much nicer to read and write because fewer symbols are necessary.
+
+### All in one
+
+```rust
+use std::fmt::Display;
+
+fn longest_with_an_announcement<'a, T>(
+    x: &'a str,
+    y: &'a str,
+    ann: T,
+) -> &'a str
+where
+    T: Display,
+{
+    println!("Announcement! {}", ann);
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+```
