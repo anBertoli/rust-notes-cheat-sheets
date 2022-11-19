@@ -41,25 +41,6 @@ bounds. The `where` clause can be used to make things clearer in a function sign
 ```rust
 use std::ops::AddAssign;
 
-fn use_add_to_all() {
-    let vec: Vec<u32> = vec![1,2,3,4,5];
-    let vec_2 = clone_and_add_to_all(&vec, 10_u16);
-    println!("{:?}", vec_2);
-
-    let vec: Vec<u64> = vec![1,2,3,4,5];
-    let vec_2 = clone_and_add_to_all(&vec, 10_u16);
-    println!("{:?}", vec_2);
-
-    let vec: Vec<i64> = vec![1,2,3,4,5];
-    let vec_2 = clone_and_add_to_all(&vec, 10_u32);
-    println!("{:?}", vec_2);
-
-    // ⚠️ doesn't work, u64 cannot be converted into
-    // i64 safely, so Into<i64> is not implemented
-    //      let vec: Vec<i64> = vec![1,2,3,4,5];
-    //      let vec_2 = add_to_all(&vec, 10_u64);
-}
-
 fn clone_and_add_to_all<T, U, V>(seq: T, num: V) -> Vec<U>
 where
     T: AsRef<[U]>,
@@ -82,5 +63,24 @@ where
     }
 
     vec
+}
+
+fn use_add_to_all() {
+    let vec: Vec<u32> = vec![1,2,3,4,5];
+    let vec_2 = clone_and_add_to_all(&vec, 10_u16);
+    println!("{:?}", vec_2);
+
+    let vec: Vec<u64> = vec![1,2,3,4,5];
+    let vec_2 = clone_and_add_to_all(&vec, 10_u16);
+    println!("{:?}", vec_2);
+
+    let vec: Vec<i64> = vec![1,2,3,4,5];
+    let vec_2 = clone_and_add_to_all(&vec, 10_u32);
+    println!("{:?}", vec_2);
+
+    // ⚠️ doesn't work, u64 cannot be converted into
+    // i64 safely, so Into<i64> is not implemented
+    //      let vec: Vec<i64> = vec![1,2,3,4,5];
+    //      let vec_2 = add_to_all(&vec, 10_u64);
 }
 ```
