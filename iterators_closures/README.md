@@ -105,3 +105,34 @@ fn example() {
 
 
 #### Example Fn
+
+### Move
+
+If you want to force the closure to take ownership of the values it uses in the environment even 
+though the body of the closure doesn’t strictly need ownership, you can use the `move` keyword 
+before the parameter list.
+
+```rust
+use std::thread;
+
+fn example() {
+    let list = vec![1, 2, 3];
+    println!("Before defining closure: {:?}", list);
+
+    thread::spawn(move || println!("From thread: {:?}", list))
+        .join()
+        .unwrap();
+}
+```
+
+Using move does't affect if the closure is a Fn, FnMut or FnOnce. This is determined only by how
+the code treats the captured/moved values.
+
+```rust
+fn example() {
+    let list = vec![1, 2, 3];
+    let cl = move || println!("From thread: {:?}", list);
+    cl();
+    cl();
+}
+```
