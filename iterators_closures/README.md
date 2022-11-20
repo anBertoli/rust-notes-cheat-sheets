@@ -97,14 +97,28 @@ fn example() {
 
     None.unwrap_or_else(fnn);
 }
-
 ```
 
 #### Example FnMut
 
+The following example shows how the FnMut traits works.
+
+```rust
+fn map<V, U, F>(list: &[V], map_fn: F)
+where
+    F: FnMut(V) -> U,
+{
+    let out = vec![];
+    for l in list {
+        // TODO
+    }
+}
+```
 
 
 #### Example Fn
+
+
 
 ### Move
 
