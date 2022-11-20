@@ -23,7 +23,6 @@ If you want to force the closure to take ownership of the values it uses in the 
 the body of the closure doesn’t strictly need ownership, you can use the move keyword before the parameter 
 list.
 
-
 ### Fn, FnMut, FnOnce
 
 The way a closure captures and handles values from the environment affects which traits the closure 
@@ -32,11 +31,77 @@ use. Closures will automatically implement one, two, or all three of these Fn tr
 fashion, depending on how the closure’s body handles the values:
 
 - `FnOnce` applies to closures that can be called once. All closures implement at least this trait, 
-because all closures can be called. A closure that moves captured values out of its body will 
-only implement FnOnce and none of the other Fn traits, because it can only be called once.
+because all closures can be called. A closure that moves captured values out of its body (or drops
+them) will only implement FnOnce and none of the other Fn traits, because it can only be called once.
 - `FnMut` applies to closures that don’t move captured values out of their body, but that might mutate 
 the captured values. These closures can be called more than once.
 - `Fn` applies to closures that don’t move captured values out of their body and that don’t mutate 
 captured values, as well as closures that capture nothing from their environment. These closures 
 can be called more than once without mutating their environment, which is important in cases such 
 as calling a closure multiple times concurrently.
+
+Every Fn meets the requirements for FnMut, and every FnMut meets the requirements for FnOnce. They’re
+not three separate categories. Instead, Fn() is a subtrait of FnMut(), which is a subtrait of FnOnce().
+This makes Fn the most exclusive and most powerful category.
+
+#### Example FnOnce
+
+Using FnOnce in the trait bound expresses the constraint that `unwrap_or_else` is only going to call
+f at most one time. Every closure trait is a FnOnce so all can be used in place of a FnOnce.
+
+```rust
+impl<T> Option<T> {
+    pub fn unwrap_or_else<F>(self, f: F) -> T
+    where
+        F: FnOnce() -> T
+    {
+        match self {
+            Some(x) => x,
+            None => f(),
+        }
+    }
+}
+
+fn example() {
+    // The closure is a FnOnce beacuse it consumes the string,
+    // so it can be called only one time. It match the method 
+    // signature accepepted so it is accepted
+    let non_copy_val = String::from("Ehy");
+    None.unwrap_or_else(|| {
+        drop(non_copy_val);
+        String::new()
+    });
+
+    // The closure is a FnMut beacuse it modifies the string,
+    // so it can be called multiple times. It is a subtype of
+    // FnOnce so it is accepted by unwrap_or_else.
+    let mut non_copy_val = String::from("Ehy");
+    let mut fn_mut = || {
+        non_copy_val.push_str(" guys");
+        String::new()
+    };
+    fn_mut();
+    fn_mut();
+    
+    None.unwrap_or_else(fn_mut);
+    
+    // The closure is a Fn because it doesn't modify the 
+    // string, so it can be called multiple times. It is a 
+    // subtype of FnOnce so it is accepted by unwrap_or_else.
+    let fnn = || {
+        println!("{:?}", non_copy_val);
+        String::new()
+    };
+    fnn();
+    fnn();
+
+    None.unwrap_or_else(fnn);
+}
+
+```
+
+#### Example FnMut
+
+
+
+#### Example Fn
