@@ -47,7 +47,7 @@ This makes Fn the most exclusive and most powerful category.
 #### Example FnOnce
 
 Using FnOnce in the trait bound expresses the constraint that `unwrap_or_else` is only going to call
-f at most one time. Every closure trait is a FnOnce so all can be used in place of a FnOnce.
+`f` at most one time. Every closure trait is a FnOnce so all can be used in place of a FnOnce.
 
 ```rust
 impl<T> Option<T> {
@@ -63,62 +63,152 @@ impl<T> Option<T> {
 }
 
 fn example() {
-    // The closure is a FnOnce beacuse it consumes the string,
-    // so it can be called only one time. It match the method 
-    // signature accepepted so it is accepted
+    // The closure is a FnOnce because it consumes the string,
+    // so it can be called only one time. It matches the method 
+    // signature so it is accepted.
     let non_copy_val = String::from("Ehy");
-    None.unwrap_or_else(|| {
+    let mut my_fn_once = || {
         drop(non_copy_val);
         String::new()
-    });
+    };
 
-    // The closure is a FnMut beacuse it modifies the string,
+    None.unwrap_or_else(my_fn_once);
+
+    // The closure is a FnMut because it modifies the string,
     // so it can be called multiple times. It is a subtype of
     // FnOnce so it is accepted by unwrap_or_else.
     let mut non_copy_val = String::from("Ehy");
-    let mut fn_mut = || {
+    let mut my_fn_mut = || {
         non_copy_val.push_str(" guys");
         String::new()
     };
-    fn_mut();
-    fn_mut();
-    
-    None.unwrap_or_else(fn_mut);
-    
+    my_fn_mut();
+    my_fn_mut();
+
+    None.unwrap_or_else(my_fn_mut);
+
     // The closure is a Fn because it doesn't modify the 
     // string, so it can be called multiple times. It is a 
     // subtype of FnOnce so it is accepted by unwrap_or_else.
-    let fnn = || {
+    let my_fn = || {
         println!("{:?}", non_copy_val);
         String::new()
     };
-    fnn();
-    fnn();
+    my_fn();
+    my_fn();
 
-    None.unwrap_or_else(fnn);
+    None.unwrap_or_else(my_fn);
 }
 ```
 
 #### Example FnMut
 
-The following example shows how the FnMut traits works.
+The following example shows how the FnMut traits works. FnMut is a subtype of FnOnce so
+FnOnce closures doesn't satisfy FnMut, while Fn closures do.
 
 ```rust
-fn map<V, U, F>(list: &[V], map_fn: F)
-where
-    F: FnMut(V) -> U,
+// Map requires a closure that can be called multiple times
+// even if it mutates the surrounding captured environment.
+fn map<V, U, F>(list: Vec<V>, mut map_fn: F) -> Vec<U>
+    where
+        F: FnMut(V) -> U,
 {
-    let out = vec![];
+    let mut out = Vec::with_capacity(list.len());
     for l in list {
-        // TODO
+        out.push(map_fn(l))
     }
+    out
+}
+
+fn example() {
+    // ❌ The closure is FnOnce because it moves out a variable from
+    // its environment, so it doesn't meet the `map` requirements.
+    let mut strings: Vec<String> = vec![];
+    let s = "str".to_string();
+    let my_fn_once = |n| {
+        strings.push(s);
+        n + 1
+    };
+
+    let res = map(vec![1, 2, 3, 4], my_fn_once); // ❌ doesn't compile
+    println!("result: {:?}", res);
+    println!("strings: {:?}", strings);
+
+    // The closure is FnMut because it mutates the environment but
+    // doesn’t capture, mutate, or move out anything from its
+    // environment, so it meets the `map` bound requirements.
+    let mut sum = 0;
+    let my_fn_mut = |n| {
+        sum += n;
+        n + 1
+    };
+
+    let res = map(vec![1, 2, 3, 4], my_fn_mut);
+    println!("result: {:?}, count: {:?}", res, sum);
+
+    // The closure is a Fn because it doesn't modify the environment.
+    // It is a subtype of the required FnMut trait so it is accepted
+    // by the `map` function.
+    let my_fn = |n| {
+        format!("num: {:?}", n)
+    };
+
+    let res = map(vec![1, 2, 3, 4], my_fn);
+    println!("result: {:?}", res);
 }
 ```
 
 
 #### Example Fn
 
+The following example shows how the Fn traits works. Fn is a subtype of FnOnce and FnMut so
+FnOnce and FnMut closures doesn't satisfy Fn.
 
+```rust
+// Map requires a closure that can be called multiple times
+// even if it mutates the surrounding captured environment.
+fn requires_fn<F: Fn()>(my_fn: F) {
+    my_fn();
+    my_fn();
+    my_fn();
+}
+
+fn example() {
+    // ❌ The closure is FnOnce because it moves out a variable from
+    // its environment, so it doesn't meet the `map` requirements.
+    let mut strings: Vec<String> = vec![];
+    let s = "str".to_string();
+    let my_fn_once = |n| {
+        strings.push(s);
+        n + 1
+    };
+
+    let res = requires_fn(vec![1, 2, 3, 4], my_fn_once); // ❌ doesn't compile
+    println!("result: {:?}", res);
+    println!("strings: {:?}", strings);
+
+    // ❌ The closure is FnMut because it mutates the environment but
+    // doesn’t capture, mutate, or move out anything from its
+    // environment. It doesn't meet the stricter Fn requirements.
+    let mut sum = 0;
+    let my_fn_mut = |n| {
+        sum += n;
+        n + 1
+    };
+
+    let res = requires_fn(vec![1, 2, 3, 4], my_fn_mut); // ❌ doesn't compile
+    println!("result: {:?}, count: {:?}", res, sum);
+
+    // The closure is a Fn because it doesn't modify the environment.
+    // It meets the function requirements.
+    let my_fn = |n| {
+        format!("num: {:?}", n)
+    };
+
+    let res = requires_fn(vec![1, 2, 3, 4], my_fn);
+    println!("result: {:?}", res);
+}
+```
 
 ### Move
 
@@ -130,23 +220,30 @@ before the parameter list.
 use std::thread;
 
 fn example() {
-    let list = vec![1, 2, 3];
-    println!("Before defining closure: {:?}", list);
+    let list = vec![1, 2, 3, 4, 5, 6, 7];
+    println!("Before: {:?}", list);
+    
+    // It could be only borrowed, but `move` forces
+    // the list to be moved inside the closure.
+    let some_seven = Some(7_u16).unwrap_or_else(move || {
+        println!("From thread: {:?}", list);
+        0
+    });
 
-    thread::spawn(move || println!("From thread: {:?}", list))
-        .join()
-        .unwrap();
+    // ❌ doesn't compile, `list` was moved into the closure
+    println!("After: {:?}", list);
 }
 ```
 
-Using move does't affect if the closure is a Fn, FnMut or FnOnce. This is determined only by how
-the code treats the captured/moved values.
+Using move doesn't affect if the closure is a `Fn`, `FnMut` or `FnOnce`. This is determined 
+only by how the code treats the captured/moved values.
 
 ```rust
 fn example() {
+    // This closure uses the `move` keyword but 
+    // it is a Fn closure  nonetheless.
     let list = vec![1, 2, 3];
-    let cl = move || println!("From thread: {:?}", list);
-    cl();
-    cl();
+    let my_fn = move || println!("From thread: {:?}", list);
+    requires_fn(my_fn);
 }
 ```
