@@ -44,7 +44,7 @@ Every Fn meets the requirements for FnMut, and every FnMut meets the requirement
 not three separate categories. Instead, Fn() is a subtrait of FnMut(), which is a subtrait of FnOnce().
 This makes Fn the most exclusive and most powerful category.
 
-#### Example FnOnce
+### Example FnOnce
 
 Using FnOnce in the trait bound expresses the constraint that `unwrap_or_else` is only going to call
 `f` at most one time. Every closure trait is a FnOnce so all can be used in place of a FnOnce.
@@ -101,7 +101,7 @@ fn example() {
 }
 ```
 
-#### Example FnMut
+### Example FnMut
 
 The following example shows how the FnMut traits works. FnMut is a subtype of FnOnce so
 FnOnce closures doesn't satisfy FnMut, while Fn closures do.
@@ -158,8 +158,7 @@ fn example() {
 }
 ```
 
-
-#### Example Fn
+### Example Fn
 
 The following example shows how the Fn traits works. Fn is a subtype of FnOnce and FnMut so
 FnOnce and FnMut closures doesn't satisfy Fn.
@@ -241,7 +240,7 @@ only by how the code treats the captured/moved values.
 ```rust
 fn example() {
     // This closure uses the `move` keyword but 
-    // it is a Fn closure  nonetheless.
+    // it is a Fn closure nonetheless.
     let list = vec![1, 2, 3];
     let my_fn = move || println!("From thread: {:?}", list);
     requires_fn(my_fn);
