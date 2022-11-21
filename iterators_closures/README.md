@@ -102,7 +102,7 @@ fn example() {
 }
 ```
 
-### Example FnMut
+### FnMut
 
 The following example shows how the FnMut traits works. FnMut is a subtype of FnOnce so
 FnOnce closures doesn't satisfy FnMut, while Fn closures do. A FnMut must be mut to be called.
@@ -159,7 +159,7 @@ fn example() {
 }
 ```
 
-### Example Fn
+### Fn
 
 The following example shows how the Fn traits works. Fn is a subtype of FnOnce and FnMut so
 FnOnce and FnMut closures doesn't satisfy Fn.
