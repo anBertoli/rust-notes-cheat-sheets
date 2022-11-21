@@ -23,7 +23,7 @@ If you want to force the closure to take ownership of the values it uses in the 
 the body of the closure doesn’t strictly need ownership, you can use the move keyword before the parameter 
 list.
 
-### Fn, FnMut, FnOnce
+## Closure traits
 
 The way a closure captures and handles values from the environment affects which traits the closure 
 implements, and traits are how functions and structs can specify what kinds of closures they can 
@@ -44,10 +44,11 @@ Every Fn meets the requirements for FnMut, and every FnMut meets the requirement
 not three separate categories. Instead, Fn() is a subtrait of FnMut(), which is a subtrait of FnOnce().
 This makes Fn the most exclusive and most powerful category.
 
-### Example FnOnce
+### FnOnce
 
-Using FnOnce in the trait bound expresses the constraint that `unwrap_or_else` is only going to call
-`f` at most one time. Every closure trait is a FnOnce so all can be used in place of a FnOnce.
+Using `FnOnce` in the trait bound expresses the constraint that `unwrap_or_else` is only going 
+to call `f` at most one time. Every closure trait is a FnOnce so all can be used in place 
+of a FnOnce. A FnOnce closure is consumed after it is called.
 
 ```rust
 impl<T> Option<T> {
@@ -104,7 +105,7 @@ fn example() {
 ### Example FnMut
 
 The following example shows how the FnMut traits works. FnMut is a subtype of FnOnce so
-FnOnce closures doesn't satisfy FnMut, while Fn closures do.
+FnOnce closures doesn't satisfy FnMut, while Fn closures do. A FnMut must be mut to be called.
 
 ```rust
 // Map requires a closure that can be called multiple times
