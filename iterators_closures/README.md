@@ -23,7 +23,7 @@ If you want to force the closure to take ownership of the values it uses in the 
 the body of the closure doesn’t strictly need ownership, you can use the move keyword before the parameter 
 list.
 
-## Closure traits
+## Traits
 
 The way a closure captures and handles values from the environment affects which traits the closure 
 implements, and traits are how functions and structs can specify what kinds of closures they can 
@@ -44,7 +44,7 @@ Every Fn meets the requirements for FnMut, and every FnMut meets the requirement
 not three separate categories. Instead, Fn() is a subtrait of FnMut(), which is a subtrait of FnOnce().
 This makes Fn the most exclusive and most powerful category.
 
-### FnOnce
+### `FnOnce`
 
 Using `FnOnce` in the trait bound expresses the constraint that `unwrap_or_else` is only going 
 to call `f` at most one time. Every closure trait is a FnOnce so all can be used in place 
@@ -102,7 +102,7 @@ fn example() {
 }
 ```
 
-### FnMut
+### `FnMut`
 
 The following example shows how the FnMut traits works. FnMut is a subtype of FnOnce so
 FnOnce closures doesn't satisfy FnMut, while Fn closures do. A FnMut must be mut to be called.
@@ -159,7 +159,7 @@ fn example() {
 }
 ```
 
-### Fn
+### `Fn`
 
 The following example shows how the Fn traits works. Fn is a subtype of FnOnce and FnMut so
 FnOnce and FnMut closures doesn't satisfy Fn.
